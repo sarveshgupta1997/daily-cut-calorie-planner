@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Cut</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <div><h1>Daily Cut</h1><small id="dateLabel"></small></div>
+    <nav class="tabs" id="tabs">
+      <button data-view="today" class="on">Today</button>
+      <button data-view="foods">Foods</button>
+      <button data-view="settings">Settings</button>
+    </nav>
+    <button class="icon" id="theme" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="view-today" class="view on">
+    <aside class="summary card">
+      <div class="ringbox">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs><circle class="trk" cx="60" cy="60" r="52"/><circle id="ring" class="arc" cx="60" cy="60" r="52"/></svg>
+        <div class="ringtxt"><strong id="rk">0</strong><span>of <b id="rt">1700</b> kcal</span></div>
+      </div>
+      <p id="rl" class="status"></p>
+      <div class="kv"><span>Protein</span><b id="pv">0 / 100 g</b></div>
+      <div class="bar2"><i id="pbar"></i></div>
+      <div class="kv"><span>Deficit vs maintenance</span><b id="df">0 kcal</b></div>
+      <div class="kv"><span>Morning weight</span><b><input id="wToday" type="number" step="0.1" placeholder="kg" aria-label="Morning weight"></b></div>
+    </aside>
+    <div id="meals" class="meals"></div>
+  </section>
+
+  <section id="view-foods" class="view">
+    <div class="tools card">
+      <input id="fSearch" type="search" placeholder="Search foods…">
+      <select id="fFilter"><option value="all">All ratings</option><option value="best">Best</option><option value="good">Good</option><option value="worst">Limit</option></select>
+      <button class="btn pri" data-act="newFood">+ New food</button>
+    </div>
+    <p class="count" id="fCount"></p>
+    <div id="foodGrid" class="grid"></div>
+  </section>
+
+  <section id="view-settings" class="view">
+    <div class="card form">
+      <h2>Targets</h2>
+      <label>Maintenance calories<input type="number" id="sMaint" step="50"></label>
+      <label>Daily calorie target<input type="number" id="sTarget" step="50"></label>
+      <label>Daily protein goal (g)<input type="number" id="sProt" step="5"></label>
+    </div>
+    <div class="card">
+      <h2>Last 7 days</h2>
+      <div id="history" class="hist"></div>
+    </div>
+    <div class="card">
+      <h2>Your data</h2>
+      <p class="mute"><b>data.js</b> can't be changed by a web page, so edits are saved in this browser. Click "Download data.js" and replace the file in your folder to make them permanent.</p>
+      <p class="mute">Everything is stored in this browser. Export a backup now and then, or move it to another device with Import.</p>
+      <div class="row">
+        <button class="btn pri" data-act="dataJs">Download data.js</button>
+        <button class="btn" data-act="json">Edit foods as JSON</button>
+        <button class="btn" data-act="export">Export backup</button>
+        <label class="btn">Import backup<input type="file" id="importFile" accept=".json" hidden></label>
+        <button class="btn" data-act="clearToday">Clear today's plan</button>
+        <button class="btn" data-act="defaults">Restore default foods</button>
+        <button class="btn danger" data-act="wipe">Erase everything</button>
+      </div>
+    </div>
+    <p class="mute foot">Calorie values are estimates. Oil, portion size and recipes change them a lot. Recalibrate maintenance from your 2–3 week morning-weight trend.</p>
+  </section>
+</main>
+
+<dialog id="picker">
+  <div class="dh"><h2 id="pTitle">Add food</h2><button class="icon" data-act="closePick" aria-label="Close">✕</button></div>
+  <input id="pSearch" type="search" placeholder="Search foods…">
+  <div class="chips" id="pChips">
+    <button data-f="all" class="on">All</button><button data-f="best">Best</button><button data-f="good">Good</button>
+    <button data-f="protein">High protein</button><button data-f="light">Under 150 kcal</button>
+  </div>
+  <div id="pList" class="plist"></div>
+</dialog>
+
+<dialog id="editor">
+  <form method="dialog" id="foodForm" class="form">
+    <div class="dh"><h2 id="eTitle">New food</h2><button type="button" class="icon" data-act="closeEdit" aria-label="Close">✕</button></div>
+    <label>Name<input name="name" required></label>
+    <div class="two">
+      <label>Calories (kcal)<input name="calories" type="number" step="any" min="0" required></label>
+      <label>Protein (g)<input name="protein" type="number" step="any" min="0" value="0" required></label>
+    </div>
+    <label>Serving size<input name="quantity" placeholder="e.g. 1 bowl, 100 g" required></label>
+    <div class="two">
+      <label>Rating<select name="rating"><option value="best">Best</option><option value="good" selected>Good</option><option value="worst">Limit</option></select></label>
+      <label>Category<input name="category" placeholder="e.g. Snack"></label>
+    </div>
+    <label>Notes<input name="notes"></label>
+    <button class="btn pri" type="submit">Save food</button>
+  </form>
+</dialog>
+
+<dialog id="jsonDlg">
+  <div class="dh"><h2>Foods as JSON</h2><button class="icon" data-act="closeJson" aria-label="Close">✕</button></div>
+  <textarea id="jsonText" spellcheck="false"></textarea>
+  <p id="jsonMsg" class="mute"></p>
+  <button class="btn pri" data-act="saveJson">Save JSON</button>
+</dialog>
+
+<div id="toast" role="status"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
